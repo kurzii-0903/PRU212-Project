@@ -6,6 +6,7 @@ using System;
 
 public class Player : MonoBehaviour
 {
+    public TextMeshProUGUI WINTEXT;
     public float combo;
     public float multiplier = 1;
     public float moveSpeed = 5f; 
@@ -47,10 +48,21 @@ public class Player : MonoBehaviour
         MovePlayer();
     }
 
+
     private void MovePlayer()
     {
         float moveInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Win")
+        {
+            WINTEXT.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
     }
 
     private void HandlePlayerAnimation()
