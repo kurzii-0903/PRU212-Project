@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
+using System;
 
 public class Player : MonoBehaviour
 {
-
-
     public float combo;
     public float multiplier = 1;
+    public float moveSpeed = 5f; 
 
     [SerializeField] TextMeshProUGUI combo_text;
     [SerializeField] TextMeshProUGUI multiplier_text;
@@ -26,19 +25,12 @@ public class Player : MonoBehaviour
     bool isJumped = false;
     float jumpForce;
     float timeInComboRange;
-    SavePlayerPos playerPosData;
-
-    private void Awake()
-    {
-        playerPosData = FindObjectOfType<SavePlayerPos>();
-    }
 
     void Start()
     {
         startPos = transform.position;
         rb = gameObject.GetComponent<Rigidbody2D>();
         rb.WakeUp();
-
     }
 
     void Update()
@@ -52,16 +44,21 @@ public class Player : MonoBehaviour
         RotatePlayer();
         Respawn();
         HandlePlayerAnimation();
+        MovePlayer();
     }
 
+    private void MovePlayer()
+    {
+        float moveInput = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+    }
 
     private void HandlePlayerAnimation()
     {
-        
         if (rb.velocity.y < 10 && rb.velocity.y > 1)
         {
-            animator.SetBool("OnJump",true);
-            isJumped = true ;
+            animator.SetBool("OnJump", true);
+            isJumped = true;
         }
         else if (rb.velocity.y < -1)
         {
@@ -80,13 +77,11 @@ public class Player : MonoBehaviour
             isJumped = false;
             animator.SetBool("OnFall", false);
             animator.SetBool("OnHold", false);
-            animator.SetBool("OnJump", false) ;
+            animator.SetBool("OnJump", false);
         }
-        
     }
 
-
-    private void PogoJump() 
+    private void PogoJump()
     {
         if (Input.GetKey(KeyCode.Space))
         {
@@ -99,13 +94,12 @@ public class Player : MonoBehaviour
             pogoJoint.limits = limits;
             pogoJoint.motor = motor;
 
-            animator.SetBool("OnHold",true);
+            animator.SetBool("OnHold", true);
 
             jumpForce = Mathf.Clamp(jumpForce + Time.deltaTime * 15, 0, 10);
         }
         else if (jumpForce > 0)
         {
-
             JointTranslationLimits2D limits = pogoJoint.limits;
             JointMotor2D motor = pogoJoint.motor;
             limits.max = 1.3f;
@@ -141,9 +135,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
-
-
     private void RotatePlayer()
     {
         Vector3 mousePosition = Input.mousePosition;
@@ -164,8 +155,6 @@ public class Player : MonoBehaviour
         rb.AddTorque(torque);
     }
 
-  
-   
     private bool IsInComboRange()
     {
         return Physics2D.CircleCast(pogoEnd.position, 0.3f, Vector2.zero, 0.3f, groundLayer);
@@ -180,9 +169,16 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.T))
         {
-            startPos = transform.position;
+            SavePlayerPosition();
         }
     }
+    public void SavePlayerPosition()
+    {
+        PlayerPrefs.SetFloat("PlayerX", transform.position.x);
+        PlayerPrefs.SetFloat("PlayerY", transform.position.y);
+        PlayerPrefs.Save();
+    }
+
 
     private IEnumerator PogoReset()
     {
@@ -199,6 +195,11 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        StopAllCoroutines(); 
+        StopAllCoroutines();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SavePlayerPosition();
     }
 }
