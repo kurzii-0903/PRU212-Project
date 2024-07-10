@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 public class Player : MonoBehaviour
 {
 
-
+    public TextMeshProUGUI WINTEXT;
     public float combo;
     public float multiplier = 1;
 
@@ -54,7 +54,14 @@ public class Player : MonoBehaviour
         HandlePlayerAnimation();
     }
 
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Win")
+        {
+            WINTEXT.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
+    }
     private void HandlePlayerAnimation()
     {
         
