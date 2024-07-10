@@ -14,11 +14,10 @@ public class PauseMenu : MonoBehaviour
 
     public void Home()
     {
-       
-        SavePlayerPos playerPosData = FindObjectOfType<SavePlayerPos>();
-        if (playerPosData != null)
+        Player player = FindObjectOfType<Player>();
+        if (player != null)
         {
-            playerPosData.PlayerPosSave();
+            player.SavePlayerPosition();
         }
 
         SceneManager.LoadScene("MainMenu");
@@ -44,13 +43,13 @@ public class PauseMenu : MonoBehaviour
     {
         if (scene.name == "Game")
         {
-            StartCoroutine(ResumeTimeScaleAfterFrame()); 
+            StartCoroutine(ResumeTimeScaleAfterFrame());
         }
     }
 
     private IEnumerator ResumeTimeScaleAfterFrame()
     {
-        yield return null; 
-        Time.timeScale = 1; 
+        yield return null;
+        Time.timeScale = 1;
     }
 }
