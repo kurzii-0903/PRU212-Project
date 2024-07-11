@@ -25,7 +25,7 @@ public class SpawnSystem : MonoBehaviour
     private GameObject getRandomGameObject()
     {
         int randomScale = Random.Range(3, 9);
-        float randomGravityScale = Random.Range(0.125f, 0.125f);
+        float randomGravityScale = Random.Range(0.01f, 0.1f); 
         GameObject rook = rooks[Random.Range(0,rooks.Length)];
         rook.transform.localScale = new Vector3 (randomScale,randomScale,randomScale);
         rook.GetComponent<Rigidbody2D>().gravityScale = randomGravityScale;
@@ -43,7 +43,6 @@ public class SpawnSystem : MonoBehaviour
 
                 yield return new WaitForSeconds(spawnpersec);
             }
-
         }
     }
 

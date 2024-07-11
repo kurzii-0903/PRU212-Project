@@ -2,33 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
+using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
     public TextMeshProUGUI WINTEXT;
     public float combo;
     public float multiplier = 1;
-    public float moveSpeed = 5f; 
+    public float moveSpeed = 5f;
 
     [SerializeField] TextMeshProUGUI combo_text;
     [SerializeField] TextMeshProUGUI multiplier_text;
     [SerializeField] Camera cam;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] LayerMask wallLayer;
     [SerializeField] Transform pogoEnd;
+    [SerializeField] Transform wallCheck;
     [SerializeField] BoxCollider2D boxCollider;
-    [SerializeField] SliderJoint2D pogoJoint;
     [SerializeField] Animator animator;
-
+    [SerializeField] GameObject canvas;
+    [SerializeField] SliderJoint2D pogoJoint;
     Rigidbody2D rb;
     Vector3 startPos;
-
+    public bool isDead { get; set; }
     bool isJumped = false;
+    bool isGrounded = false;
+    bool isTouchingWall = false;
     float jumpForce;
     float timeInComboRange;
+    SavePlayerPos playerPosData;
+
+    private void Awake()
+    {
+        playerPosData = FindObjectOfType<SavePlayerPos>();
+    }
 
     void Start()
     {
+        isDead = false;
         startPos = transform.position;
         rb = gameObject.GetComponent<Rigidbody2D>();
         rb.WakeUp();
@@ -37,25 +48,34 @@ public class Player : MonoBehaviour
     void Update()
     {
         combo_text.text = "COMBO: " + combo.ToString();
-        multiplier_text.text = "x " + string.Format("{0:0.0}", multiplier.ToString());
+        multiplier_text.text = "x " + string.Format("{0:0.0}", multiplier);
 
         multiplier = Mathf.Clamp(1 + combo / 10, 1, 2);
+
+        isGrounded = IsGrounded();
+        isTouchingWall = IsTouchingWall();
 
         PogoJump();
         RotatePlayer();
         Respawn();
         HandlePlayerAnimation();
+        MoveInAir();
         MovePlayer();
+
+        OnDeath();
     }
-
-
+    private void OnDeath()
+    {
+        if (isDead)
+        {
+            canvas.SetActive(true);
+        }
+    }
     private void MovePlayer()
     {
         float moveInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
     }
-
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Win")
@@ -63,8 +83,12 @@ public class Player : MonoBehaviour
             WINTEXT.gameObject.SetActive(true);
             Time.timeScale = 0;
         }
+        if (collision.gameObject.tag == "Rooks")
+        {
+            isDead = true;
+            Time.timeScale = 0;
+        }
     }
-
     private void HandlePlayerAnimation()
     {
         if (rb.velocity.y < 10 && rb.velocity.y > 1)
@@ -95,33 +119,20 @@ public class Player : MonoBehaviour
 
     private void PogoJump()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if ((Input.GetKey(KeyCode.Space) && isGrounded) || isTouchingWall)
         {
-            JointTranslationLimits2D limits = pogoJoint.limits;
-            JointMotor2D motor = pogoJoint.motor;
-
-            limits.min = 0.88f;
-            limits.max = 1.3f - 0.042f * jumpForce;
-
-            pogoJoint.limits = limits;
-            pogoJoint.motor = motor;
-
+            jumpForce = Mathf.Clamp(jumpForce + Time.deltaTime * 15, 5, 25);
             animator.SetBool("OnHold", true);
-
-            jumpForce = Mathf.Clamp(jumpForce + Time.deltaTime * 15, 0, 10);
         }
-        else if (jumpForce > 0)
+        else if (jumpForce > 0 && (isGrounded || isTouchingWall))
         {
-            JointTranslationLimits2D limits = pogoJoint.limits;
-            JointMotor2D motor = pogoJoint.motor;
-            limits.max = 1.3f;
-            pogoJoint.limits = limits;
-            motor.motorSpeed = jumpForce * multiplier;
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-            StartCoroutine(PogoReset());
-            pogoJoint.motor = motor;
+            Vector2 direction = (mousePosition - transform.position).normalized;
+            rb.AddForce(direction * jumpForce * multiplier, ForceMode2D.Impulse);
+
             jumpForce = 0;
-
             if (IsInComboRange())
             {
                 combo += 1;
@@ -130,6 +141,7 @@ public class Player : MonoBehaviour
             {
                 combo = 0;
             }
+            animator.SetBool("OnHold", false);
         }
 
         if (IsInComboRange())
@@ -172,6 +184,16 @@ public class Player : MonoBehaviour
         return Physics2D.CircleCast(pogoEnd.position, 0.3f, Vector2.zero, 0.3f, groundLayer);
     }
 
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(pogoEnd.position, 0.1f, groundLayer) != null;
+    }
+
+    private bool IsTouchingWall()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.1f, wallLayer) != null;
+    }
+
     private void Respawn()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -181,7 +203,7 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.T))
         {
-            SavePlayerPosition();
+            startPos = transform.position;
         }
     }
     public void SavePlayerPosition()
@@ -190,8 +212,6 @@ public class Player : MonoBehaviour
         PlayerPrefs.SetFloat("PlayerY", transform.position.y);
         PlayerPrefs.Save();
     }
-
-
     private IEnumerator PogoReset()
     {
         yield return new WaitForSeconds(0.2f);
@@ -203,6 +223,14 @@ public class Player : MonoBehaviour
 
         pogoJoint.motor = motor;
         pogoJoint.limits = limits;
+    }
+    private void MoveInAir()
+    {
+        if (rb.velocity.y < 0) 
+        {
+            float moveInput = Input.GetAxis("Horizontal");
+            rb.velocity = new Vector2(moveInput * 5, rb.velocity.y);
+        }
     }
 
     private void OnDisable()
