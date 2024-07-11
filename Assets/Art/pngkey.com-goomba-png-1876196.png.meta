@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d23e82e29bfdabf4f9b01dc69e6901b5
+guid: 1b6eab88188c3c54391b5b4eb8f6ffec
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -63,9 +63,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 1
+  applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -97,64 +97,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: decorative_obj_0
+      name: pngkey.com-goomba-png-1876196_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 4
-        width: 95
-        height: 169
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 164
+        height: 161
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2333feade6c065940a1d8ab4dea868cc
-      internalID: -2113478071
+      spriteID: 9c1e6f0ae5f507c4f8ac9ccd529d48ff
+      internalID: 277582149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decorative_obj_1
+      name: pngkey.com-goomba-png-1876196_1
       rect:
         serializedVersion: 2
-        x: 121
-        y: 7
-        width: 72
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 199
+        y: 0
+        width: 176
+        height: 161
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f1d325d45621f24496a5d45bc7da82c
-      internalID: -2143268533
+      spriteID: adca2060d937f6045bdbd797e737634e
+      internalID: 1948628608
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decorative_obj_2
+      name: pngkey.com-goomba-png-1876196_2
       rect:
         serializedVersion: 2
-        x: 209
-        y: 10
-        width: 87
-        height: 134
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 416
+        y: 0
+        width: 165
+        height: 161
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24597f25542a8dc4f8cf7d3fd6b5b938
-      internalID: -245722751
+      spriteID: 20a7434c6ee29824194ebae3c16ded39
+      internalID: 1184779045
       vertices: []
       indices: 
       edges: []
@@ -170,9 +170,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      decorative_obj_0: -2113478071
-      decorative_obj_1: -2143268533
-      decorative_obj_2: -245722751
+      pngkey.com-goomba-png-1876196_0: 277582149
+      pngkey.com-goomba-png-1876196_1: 1948628608
+      pngkey.com-goomba-png-1876196_2: 1184779045
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
