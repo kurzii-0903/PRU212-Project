@@ -429,7 +429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VatTocVat: 2
   DiChuyenTrai: 0
-  LucDay: 100
+  LucDay: 80
 --- !u!50 &17178427
 Rigidbody2D:
   serializedVersion: 4
